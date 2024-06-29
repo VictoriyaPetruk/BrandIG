@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaBrand Pulse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./../css/style.css">
+    <style>
+        .accordion-button {
+            background-color: black;
+            color: white;
+        }
+        .accordion-button:not(.collapsed) {
+            color: white;
+            background-color: black;
+        }
+        .accordion-collapse {
+            background-color: black;
+        }
+        .accordion-item {
+            background-color: black;
+            border-color: violet;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="container mt-5">
+            <div class="row justify-content-center align-items-center">
+                <!-- Logo and Name in one column -->
+                <div class="col-auto">
+                    <div class="d-flex align-items-center">
+                        <img src="./../img/violetLogo_w.png" alt="InstaBrand Pulse Logo" class="logo mb-2">
+                        <h1 class="ms-3 logo-text">IGBrand Pulse AI</h1> <!-- ms-3 adds a margin to the left of the title for spacing -->
+                    </div>
+                </div>
+                <div class="tagline">Analyze your Instagram account's personal brand value with AI.
+                     </div>
+                     <!--Make significant improvments to your growth for the audience.-->
+            </div>
+            <!-- Additional content -->
+        </div>
+        <div class="row justify-content-center mt-4">
+            <div class="col-12 col-md-6 d-flex">
+                <div class="input-group me-3">
+                    <span class="input-group-text">@</span>
+                    <input type="text" class="form-control" id="instagramUsername" placeholder="Type your account name">
+                </div>
+                <button type="button" class="btn btn-primary btn-sm align-self-center" id="analyzeBtn">Analyze</button>
+                <div class="spinner-border text-primary d-none ms-2" role="status" id="spinner"></div>
+            </div>
+        </div>
+        <div id="resultsContainer" class="row justify-content-center mt-4 d-none">
+            <div class="col-12 col-md-8">
+                <div style="display: flex; align-items: center;">
+                <div class="gauge text-center" style="width: 200px; --rotation:83deg; --color:#8a2be2; --background:#e9ecef;">
+                    <div class="percentage"></div>
+                    <div class="mask"></div>
+                    <span id="brandRate" class="value">46%</span>
+               </div>
+                    <h3 class="text-center">Overall Brand Score of <span id="accountNameVal"></span></h3>
+                </div>
+                <br/>
+                <p id="businessDescription"  style="color: white;">Business Description: <span id="businessDescriptionVal"  style="color: #8a2be2;"></span></p>
+                <p id="businessArea">Business Area: <span style="color: #8a2be2;" id="businessAreaVal"></span></p>
+                <p id="region">Region: <span id="regionVal" style="color: #8a2be2;"></span></p>
+                <p id="formula">Formula for calculating Brand Value: <span id="formulaVal" style="color: #8a2be2;">Engagement Value+Content Value+Qualitative Value</span></p>
+                <div class="accordion mt-3" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTopicsContent">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTopicsContent" aria-expanded="false" aria-controls="collapseTopicsContent">
+                                Topics Content
+                            </button>
+                        </h2>
+                        <div id="collapseTopicsContent" class="accordion-collapse collapse" aria-labelledby="headingTopicsContent" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="topicsContent"><span id="topicsContentVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTargetNiches">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTargetNiches" aria-expanded="false" aria-controls="collapseTargetNiches">
+                                Target Niches
+                            </button>
+                        </h2>
+                        <div id="collapseTargetNiches" class="accordion-collapse collapse" aria-labelledby="headingTargetNiches" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="targetNiches"><span id="targetNichesVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingHashtagIdeas">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHashtagIdeas" aria-expanded="false" aria-controls="collapseHashtagIdeas">
+                                Hashtag Ideas
+                            </button>
+                        </h2>
+                        <div id="collapseHashtagIdeas" class="accordion-collapse collapse" aria-labelledby="headingHashtagIdeas" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="hashtagIdeas"><span id="hashtagIdeasVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingImprovementsSuggestions">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImprovementsSuggestions" aria-expanded="false" aria-controls="collapseImprovementsSuggestions">
+                                Improvements Suggestions
+                            </button>
+                        </h2>
+                        <div id="collapseImprovementsSuggestions" class="accordion-collapse collapse" aria-labelledby="headingImprovementsSuggestions" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="improvementsSuggestions"><span id="improvementsSuggestionsVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingAnalytics">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnalytics" aria-expanded="false" aria-controls="collapseAnalytics">
+                                Analytics
+                            </button>
+                        </h2>
+                        <div id="collapseAnalytics" class="accordion-collapse collapse" aria-labelledby="headingAnalytics" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="analytics"><span id="analyticsVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" >
+                        <h2 class="accordion-header" id="headingPotentialPartners">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePotentialPartners" aria-expanded="false" aria-controls="collapsePotentialPartners">
+                                Potential Partners
+                            </button>
+                        </h2>
+                        <div id="collapsePotentialPartners" class="accordion-collapse collapse" aria-labelledby="headingPotentialPartners" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="potentialPartners"><span id="potentialPartnersVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTrendsContent">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTrendsContent" aria-expanded="false" aria-controls="collapseTrendsContent">
+                                Trends Content
+                            </button>
+                        </h2>
+                        <div id="collapseTrendsContent" class="accordion-collapse collapse" aria-labelledby="headingTrendsContent" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <p id="trendsContent"><span id="trendsContentVal"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div style="display: flex;">
+        <img src="./../img/biggroup.png" class="abstract-img" alt="Abstract Image">
+    </div>
+     
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
