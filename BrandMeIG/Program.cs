@@ -1,5 +1,6 @@
 
 using BrandMeIG.InstagramAPI;
+using BrandMeIG.GptAPI;
 using BrandMeIG.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using BrandMeIG.Configuration;
 using static System.Net.WebRequestMethods;
+using System.Net.Http.Headers;
 
 namespace BrandMeIG
 {
@@ -26,12 +28,14 @@ namespace BrandMeIG
             builder.Services.AddSwaggerGen();
             string token = "EAATyn3xurrEBO4vVwBJ3gZBYzdRqRRQYXWuPN1HuWrR9U86O5IWbDi2F3ntH4AuFGO9NKwO4SwC07Kz9EHeZBSQFg335AKHZCbA09o3lbWwqKmOe6gARajDCW6dWs59Lp0ld1SZBnSHWceD28TaRrUB86Lt8xEeTbBY3plbzdmAFztGBNTD7vbjJPXCss1z3v5JHo9QqdgucfEe3A58ZD";
             string business_id = "17841461918433846";
+            string gptToken = "";
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://192.168.0.206:8080").AllowAnyMethod().AllowAnyHeader();
+                        policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
                     });
             });
 
@@ -66,6 +70,28 @@ namespace BrandMeIG
                 };
                 return new InstagramClient(client, settings, botConfig);
             });
+
+            builder.Services
+            .AddHttpClient("GPTClient", (sp, client) =>
+            {
+                var configuration = sp.GetRequiredService<IOptionsMonitor<DeploymentSettings>>();
+                client.BaseAddress = new Uri("https://api.openai.com/v1/");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", gptToken);
+            })
+            .AddTypedClient<IGptClient>((client, sp) =>
+            {
+                var contractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                };
+
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver,
+                    Formatting = Formatting.None
+                };
+                return new GptClient(client, settings);
+            });
             builder.Services.Configure<DeploymentSettings>(builder.Configuration);
             var app = builder.Build();
 
@@ -79,7 +105,7 @@ namespace BrandMeIG
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-           
+
 
             app.MapGet("/analitics", async (string userName, IInstagramClient _client) =>
             {
@@ -89,8 +115,9 @@ namespace BrandMeIG
                 //Return General Model with Data 
                 //Use Cach for user Id 
                 //Use Cookies 
-                
-                return new ResultModel () {
+
+                return new ResultModel()
+                {
                     AccountName = "svitech_wawa",
                     BusinessDescription = "IT events Warszawa | Community | Networking",
                     BrandValue = 43,
@@ -138,9 +165,32 @@ namespace BrandMeIG
             .WithName("GetWeatherForecast")
             .WithOpenApi();
 
+            app.MapGet("/analitics/gpt", async (IGptClient gptClient) =>
+            {
+                string filePath = "../mock data.json";
+
+                string fileContent = System.IO.File.ReadAllText(filePath);
+
+                var contractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                };
+
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver,
+                    Formatting = Formatting.None
+                };
+
+                var data = JsonConvert.DeserializeObject<Business_Discovery>(fileContent, settings);
+                var gptRes = await gptClient.GetPageAnalysis(data);
+
+                return gptRes;
+            }).WithOpenApi();
+
 
             app.Run();
-           
+
 
         }
     }
