@@ -1,3 +1,4 @@
+<b>IGInsights(BrandIG).</b></br>
 Developed tool that analyze Instagram accounts with Chat Gpt.
 Used Minimal API .Net, JS, Material-UI, Facebook API, Chat GPT API, Figma for design.
 1. Landing page with Framer 
@@ -6,9 +7,9 @@ Used Minimal API .Net, JS, Material-UI, Facebook API, Chat GPT API, Figma for de
 
 2. Web site for proof of concept </br>
 <img width="941" alt="image" src="https://github.com/user-attachments/assets/26de96e3-90cd-44bc-8cb9-8f6557c5cb0b"> </br>
-3. Load logic with analytics for the IG account
-<img width="401" alt="image" src="https://github.com/user-attachments/assets/45b4caec-1903-496a-ae16-318738040aae">
-4. Developed Chat GPT chat for test version to get analytics in messages 
+3. Load logic with analytics for the IG account </br>
+<img width="401" alt="image" src="https://github.com/user-attachments/assets/45b4caec-1903-496a-ae16-318738040aae"></br>
+4. Developed Chat GPT chat for test version to get analytics in messages </br>
 <img width="449" alt="image" src="https://github.com/user-attachments/assets/c5e3180b-11ae-4ced-a10d-896ec2679a8b">
 
 
