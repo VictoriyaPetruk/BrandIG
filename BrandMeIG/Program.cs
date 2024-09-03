@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using BrandMeIG.Configuration;
 using static System.Net.WebRequestMethods;
 using System.Net.Http.Headers;
+using BrandMeIG.Controllers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BrandMeIG
 {
@@ -19,15 +21,12 @@ namespace BrandMeIG
             var MyAllowSpecificOrigins = "AllowSpecificOrigin";
 
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
             builder.Services.AddAuthorization();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            string token = "EAATyn3xurrEBO4vVwBJ3gZBYzdRqRRQYXWuPN1HuWrR9U86O5IWbDi2F3ntH4AuFGO9NKwO4SwC07Kz9EHeZBSQFg335AKHZCbA09o3lbWwqKmOe6gARajDCW6dWs59Lp0ld1SZBnSHWceD28TaRrUB86Lt8xEeTbBY3plbzdmAFztGBNTD7vbjJPXCss1z3v5JHo9QqdgucfEe3A58ZD";
-            string business_id = "17841461918433846";
+            string token = "_token_";
+            string business_id = "_id_";
             string gptToken = "";
 
             builder.Services.AddCors(options =>
@@ -109,61 +108,27 @@ namespace BrandMeIG
 
             app.MapGet("/analitics", async (string userName, IInstagramClient _client) =>
             {
-                //Instagram Client and get Data
                 var result = await _client.GetInfo(userName, default);
-                //OpenAI Client and process Data 
-                //Return General Model with Data 
-                //Use Cach for user Id 
-                //Use Cookies 
 
                 return new ResultModel()
                 {
-                    AccountName = "svitech_wawa",
-                    BusinessDescription = "IT events Warszawa | Community | Networking",
+                    AccountName = result.business_discovery.name,
+                    BusinessDescription = result.business_discovery.biography,
                     BrandValue = 43,
-                    BusinessArea = "IT community and networking events",
+                    BusinessArea = "",
                     Region = "Warsaw, Poland",
-                    TargetNiches = "Ukrainian IT professionals in Poland, IT startups, Tech enthusiasts",
-                    HashtagIdeas = "#ITCommunity #NetworkingEvents #TechWarsaw #UkrainianIT #PolandTech",
-                    ImprovementsSuggestions = "1. Increase engagement by collaborating with local tech companies for events.\n" +
-                                  "2. Develop content focused on career growth in the IT sector in Poland.\n" +
-                                  "3. Partner with popular tech influencers in Poland for joint events and content.\n" +
-                                  "4. Enhance social media presence using trending hashtags and interactive posts.",
+                    TargetNiches = "",
+                    HashtagIdeas = "",
+                    ImprovementsSuggestions = "",
                     Analitics = "Followers: 531\n" +
                     "Average Engagement Rate: 3.2%\n" +
-                    "Top performing post: Image post on startup registration (31 likes)\n" +
+                    "Top performing post: (31 likes)\n" +
                     "Video engagement higher than image posts.",
-                    PotentialPartners = "1. Google Poland\n" +
-                            "2. Microsoft Poland\n" +
-                            "3. Allegro Tech\n" +
-                            "4. Techland\n" +
-                            "5. CD Projekt Red",
-                    TrendsContent = "1. Short-form educational videos on IT trends and career advice.\n" +
-                        "2. Behind-the-scenes content of events and meetups.\n" +
-                        "3. Interviews with successful IT professionals in Poland.\n" +
-                        "4. Interactive Q&A sessions and live streams.",
-                    TopicsContent = "1. Navigating the IT Job Market in Poland: Tips and Strategies\n" +
-                        "2. The Role of Emotional Intelligence in IT Leadership\n" +
-                        "3. Emerging Trends in Cybersecurity: What You Need to Know\n" +
-                        "4. Success Stories: Ukrainian IT Professionals Thriving in Poland\n" +
-                        "5. Maximizing Productivity with Remote Work Tools"
+                    PotentialPartners = "",
+                    TrendsContent = "",
+                    TopicsContent = ""
                 };
             }).WithOpenApi();
-
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = ""
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
 
             app.MapGet("/analitics/gpt", async (IGptClient gptClient) =>
             {
@@ -188,7 +153,43 @@ namespace BrandMeIG
                 return gptRes;
             }).WithOpenApi();
 
+            app.MapPost("/api/chat/send", async (ChatRequest request) =>
+            {
+                if (string.IsNullOrWhiteSpace(request.Message))
+                {
+                    return Results.BadRequest("Message cannot be empty.");
+                }
 
+                var apiKey = "api_key";
+                var apiUrl = "https://api.openai.com/v1/chat/completions";
+
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+                var chatRequest = new
+                {
+                    model = "gpt-4o-mini", // or another model like "text-curie-001"
+                    messages = new[]
+                    {
+                        new { role = "user",  content = request.Message }
+                    },
+                    max_tokens = 150
+                };
+
+                var response = await httpClient.PostAsJsonAsync(apiUrl, chatRequest);
+                if (response.IsSuccessStatusCode)
+                {
+                    var chatResponse = await response.Content.ReadFromJsonAsync<OpenAiResponse>();
+                    return Results.Ok(chatResponse);
+                }
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                return Results.StatusCode((int)response.StatusCode);
+            })
+            .WithName("SendMessage")
+            .Produces<ChatResponse>(StatusCodes.Status200OK)
+            .Produces<string>(StatusCodes.Status400BadRequest)
+            .Produces<string>(StatusCodes.Status500InternalServerError);
             app.Run();
 
 
