@@ -1,6 +1,9 @@
-<b>IGInsights(BrandIG).</b></br>
+<h1><b>IGInsights(BrandIG) - tool for analyzing Instagram accounts with ChatGpt</b></h1>
+<i>v1/proof of concept.</i>
+<hr>
 Developed tool that analyze Instagram accounts with Chat Gpt.
 Used Minimal API .Net, JS, Material-UI, Facebook API, Chat GPT API, Figma for design.
+</br>
 1. Landing page
 <img width="932" alt="image" src="https://github.com/user-attachments/assets/d9723384-3d05-4391-ae2b-134611745e4a"> </br>
 <img width="821" alt="image" src="https://github.com/user-attachments/assets/35be832c-a3f2-43b9-a946-592c37c86993"></br>
