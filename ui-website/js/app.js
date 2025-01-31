@@ -70,15 +70,14 @@ function updateGauge(percentage) {
 
 function postAnalytics(userName) {
     const encodedUserName = encodeURIComponent(userName);
-    const url = `https://localhost:5220/analitics?userName=${encodedUserName}`;
+    const url = `/analitics?userName=${encodedUserName}`;
 
     return fetch(url, {
         method: 'GET',
-        // mode: 'cors',e
-        // headers: {
-        //     'Content-Type': 'application/json'
-        //     // Removed 'Access-Control-Allow-Origin' header because it should be set on the server, not on the client request.
-        // }
+        mode: 'cors',e
+         headers: {
+           'Content-Type': 'application/json'
+        }
     })
     .then(response => {
         if (!response.ok) {
